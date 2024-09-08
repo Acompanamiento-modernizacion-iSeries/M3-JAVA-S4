@@ -1,5 +1,7 @@
 package banco;
+
 import cuentas.*;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,28 +16,21 @@ public class Banco {
         scanner = new Scanner(System.in);
     }
 
-    public void agregarCuenta(Cuenta cuenta)
-    {
+    public void agregarCuenta(Cuenta cuenta) {
         cuentas.add(cuenta);
     }
 
     public void mostrarMenu() {
         while (true) {
-            System.out.println("----------------------");
-            System.out.println("--- Menú del Banco ---");
-            System.out.println("----------------------");
+            System.out.println("\n--- Menú del Banco ---");
             System.out.println("1. Crear cuenta");
             System.out.println("2. Depositar");
             System.out.println("3. Retirar");
             System.out.println("4. Consultar saldo");
             System.out.println("5. Aplicar interés (solo cuentas de ahorro)");
             System.out.println("6. Salir");
-            System.out.print("Seleccione una opción: ");
 
-            Scanner sc = new Scanner(System.in);
-            int opcion;
-
-            opcion = obtenerOpcionValida(sc);
+            int opcion = leerEntero("Seleccione una opción: ", 1, 6);
 
             switch (opcion) {
                 case 1:
@@ -54,33 +49,23 @@ public class Banco {
                     aplicarInteres();
                     break;
                 case 6:
-                    System.out.println("Gracias por usar nuestro sistema bancario.");
+                    System.out.println("Gracias por usar nuestro sistema");
                     return;
-                default:
-                    System.out.println("Opción no válida. Intente de nuevo.");
             }
         }
     }
 
     private void crearCuenta() {
-        System.out.print("Ingrese el nombre del titular: ");
-        String titular = scanner.nextLine();
-        System.out.print("Ingrese el saldo inicial: ");
-        BigDecimal saldo = scanner.nextBigDecimal();
-        System.out.print("Tipo de cuenta (1: Ahorro, 2: Corriente): ");
-        int tipoCuenta = scanner.nextInt();
+        String titular = leerString("Ingrese el nombre del titular: ");
+        BigDecimal saldo = leerBigDecimal("Ingrese el saldo inicial: ", BigDecimal.ZERO);
+        int tipoCuenta = leerEntero("Tipo de cuenta (1: Ahorro, 2: Corriente): ", 1, 2);
 
         if (tipoCuenta == 1) {
-            System.out.print("Ingrese la tasa de interés: ");
-            double tasaInteres = scanner.nextDouble();
+            double tasaInteres = leerDouble("Ingrese la tasa de interés: ", 0, 100);
             agregarCuenta(new CuentaAhorros(titular, saldo, tasaInteres));
-        } else if (tipoCuenta == 2) {
-            System.out.print("Ingrese el límite de sobregiro: ");
-            BigDecimal sobregiro = scanner.nextBigDecimal();
-            agregarCuenta(new CuentaCorriente(titular, saldo, sobregiro));
         } else {
-            System.out.println("Tipo de cuenta no válido.");
-            return;
+            BigDecimal sobregiro = leerBigDecimal("Ingrese el límite de sobregiro: ", BigDecimal.ZERO);
+            agregarCuenta(new CuentaCorriente(titular, saldo, sobregiro));
         }
         System.out.println("Cuenta creada exitosamente.");
     }
@@ -88,8 +73,7 @@ public class Banco {
     private void realizarDeposito() {
         Cuenta cuenta = seleccionarCuenta();
         if (cuenta != null) {
-            System.out.print("Ingrese la cantidad a depositar: ");
-            BigDecimal cantidad = scanner.nextBigDecimal();
+            BigDecimal cantidad = leerBigDecimal("Ingrese la cantidad a depositar: ", BigDecimal.ZERO);
             cuenta.depositar(cantidad);
             System.out.println("Depósito realizado exitosamente.");
         }
@@ -98,8 +82,7 @@ public class Banco {
     private void realizarRetiro() {
         Cuenta cuenta = seleccionarCuenta();
         if (cuenta != null) {
-            System.out.print("Ingrese la cantidad a retirar: ");
-            BigDecimal cantidad = scanner.nextBigDecimal();
+            BigDecimal cantidad = leerBigDecimal("Ingrese la cantidad a retirar: ", BigDecimal.ZERO);
             cuenta.retirar(cantidad);
         }
     }
@@ -132,42 +115,60 @@ public class Banco {
             System.out.println((i + 1) + ". " + cuentas.get(i).titular());
         }
 
-        int seleccion = scanner.nextInt();
-        if (seleccion < 1 || seleccion > cuentas.size()) {
-            System.out.println("Selección no válida.");
-            return null;
-        }
-
+        int seleccion = leerEntero("Ingrese el número de cuenta: ", 1, cuentas.size());
         return cuentas.get(seleccion - 1);
     }
 
-    private static int obtenerOpcionValida(Scanner scanner) {
-        int opcion = 0;
-        boolean entradaValida = false;
+    private String leerString(String mensaje) {
+        System.out.print(mensaje);
+        return scanner.nextLine().trim();
+    }
 
-        while (!entradaValida) {
-            String entrada = scanner.nextLine();
-            if (esNumero(entrada)) {
-                opcion = Integer.parseInt(entrada);
-                entradaValida = true;
+    private int leerEntero(String mensaje, int min, int max) {
+        while (true) {
+            System.out.print(mensaje);
+            if (scanner.hasNextInt()) {
+                int valor = scanner.nextInt();
+                scanner.nextLine(); // Limpiar el buffer
+                if (valor >= min && valor <= max) {
+                    return valor;
+                }
             } else {
-                System.out.print("Por favor, ingrese un número válido: ");
+                scanner.nextLine(); // Limpiar el buffer
             }
+            System.out.println("Por favor, ingrese un número válido entre " + min + " y " + max + ".");
         }
-
-        return opcion;
     }
 
-    private static boolean esNumero(String str) {
-        if (str == null || str.isEmpty()) {
-            return false;
-        }
-        for (char c : str.toCharArray()) {
-            if (!Character.isDigit(c)) {
-                return false;
+    private double leerDouble(String mensaje, double min, double max) {
+        while (true) {
+            System.out.print(mensaje);
+            if (scanner.hasNextDouble()) {
+                double valor = scanner.nextDouble();
+                scanner.nextLine(); // Limpiar el buffer
+                if (valor >= min && valor <= max) {
+                    return valor;
+                }
+            } else {
+                scanner.nextLine(); // Limpiar el buffer
             }
+            System.out.println("Por favor, ingrese un número válido entre " + min + " y " + max + ".");
         }
-        return true;
     }
 
+    private BigDecimal leerBigDecimal(String mensaje, BigDecimal min) {
+        while (true) {
+            System.out.print(mensaje);
+            if (scanner.hasNextBigDecimal()) {
+                BigDecimal valor = scanner.nextBigDecimal();
+                scanner.nextLine(); // Limpiar el buffer
+                if (valor.compareTo(min) >= 0) {
+                    return valor;
+                }
+            } else {
+                scanner.nextLine(); // Limpiar el buffer
+            }
+            System.out.println("Por favor, ingrese un número válido mayor o igual a " + min + ".");
+        }
+    }
 }
