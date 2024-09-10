@@ -5,7 +5,7 @@
 ## Objetivo.
 Los asistentes deben desarrollar un sistema bancario en Java que maneje cuentas corrientes y de ahorros, aplicando los conceptos de OOP aprendidos en la sesión.
 ## Instrucciones.
-- Implementar la clase base `Cuenta` con los métodos básicos para depositar y retirar dinero, así como para consultar el saldo.
+- Implementar la clase base `taller4.Cuenta` con los métodos básicos para depositar y retirar dinero, así como para consultar el saldo.
 - Crear subclases `CuentaCorriente` y `CuentaAhorros`, añadiendo funcionalidad específica para cada tipo de cuenta (sobregiro y aplicación de interés). 
 - Debe utilizar herencia para diferenciar entre `CuentaCorriente` y `CuentaAhorros`.
 - Deben implementarse métodos polimórficos para las operaciones comunes, con lógica específica según el tipo de cuenta.
