@@ -22,9 +22,7 @@ public class Banco {
 
     public void mostrarMenu() {
         while (true) {
-            System.out.println("----------------------");
-            System.out.println("--- Menú del Banco ---");
-            System.out.println("----------------------");
+            System.out.println("\n--- Menú del Banco ---");
             System.out.println("1. Crear cuenta");
             System.out.println("2. Depositar");
             System.out.println("3. Retirar");
@@ -174,3 +172,4 @@ public class Banco {
         }
     }
 }
+
